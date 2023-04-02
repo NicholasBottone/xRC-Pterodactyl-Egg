@@ -1,5 +1,5 @@
 # xRC-Pterodactyl-Egg
-A Pterodactyl panel egg for hosting xRC Sim servers.
+A Pterodactyl panel egg for hosting [xRC Sim](https://xrcsimulator.org/) servers.
 
 ![console](./screenshots/console.png)  |  ![variables](./screenshots/variables.png)
 :-:|:-:
