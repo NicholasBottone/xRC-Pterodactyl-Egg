@@ -1,0 +1,167 @@
+{
+    "_comment": "DO NOT EDIT: FILE GENERATED AUTOMATICALLY BY PTERODACTYL PANEL - PTERODACTYL.IO",
+    "meta": {
+        "version": "PTDL_v1",
+        "update_url": null
+    },
+    "exported_at": "2023-04-01T23:05:06-04:00",
+    "name": "xRC Sim Server",
+    "author": "contact@secondrobotics.org",
+    "description": "Host a multiplayer server for the robotics simulation game featuring FRC, FTC, and VRC games.",
+    "features": null,
+    "images": [
+        "ghcr.io\/pterodactyl\/yolks:debian"
+    ],
+    "file_denylist": [],
+    "startup": ".\/xrc.x86_64 \t-batchmode -nographics \tRouterPort={{SERVER_PORT}} \tPort={{SERVER_PORT}} \tGame={{XRC_GAME}} \tGameOption={{GAME_OPTION}} \tFrameRate={{FRAME_RATE}} \tTmode={{TMODE}} \tHoldingMode={{HOLDING_MODE}} \tRegister={{REGISTER}} \tSpectators={{SPECTATORS}} \tUpdateTime={{UPDATE_TIME}} \tMaxData={{MAX_DATA}} \tStartWhenReady={{READY_START}} \tComment={{COMMENT}} \tPassword={{PASSWORD}} \tAdmin={{ADMIN_USER}} \tNetStats={{NET_STATS}} \tGameSettings={{GAME_SETTINGS}}",
+    "config": {
+        "files": "{}",
+        "startup": "{\r\n    \"done\": \"done setting up udp.\",\r\n    \"userInteraction\": []\r\n}",
+        "logs": "{\r\n    \"custom\": true,\r\n    \"location\": \"nohup.out\"\r\n}",
+        "stop": "^CC"
+    },
+    "scripts": {
+        "installation": {
+            "script": "#!\/bin\/bash\r\n# xRC Sim Install Script\r\ncd \/mnt\/server\r\nrm -r *\r\n\r\n# Update some stuff\r\napt update\r\napt install -y curl jq\r\napt install -y unzip jq\r\n\r\n# Download\r\ncurl -o xRC_Linux_Server.zip https:\/\/xrcsimulator.org\/Downloads\/xRC_Linux_Server.zip\r\n\r\n# Unzip\r\nunzip -o -d . xRC_Linux_Server.zip\r\n\r\n# Rename executable and data folder\r\nmv *.x86_64 xrc.x86_64\r\nmv *_Data xrc_Data\r\n\r\n# Grant execute permissions to executable\r\nchmod +x xrc.x86_64",
+            "container": "debian:buster-slim",
+            "entrypoint": "bash"
+        }
+    },
+    "variables": [
+        {
+            "name": "xRC Game",
+            "description": "Which game type the server should use. \r\n    \t\t0=\"Splish Splash\"\r\n\t\t1=\"Relic Recovery\"\r\n\t\t2=\"Rover Ruckus\"\r\n\t\t3=\"Skystone\"\r\n\t\t4=\"Infinite Recharge\"\r\n\t\t5=\"Change Up\"\r\n\t\t6=\"Bot Royale\"\r\n\t\t7=\"Ultimate Goal\"\r\n\t\t8=\"Tipping Point\"\r\n\t\t9=\"Freight Frenzy\"\r\n                10=\"Rapid React\"\r\n                11=\"Spin Up\"\r\n                12=\"Power Play\"\r\n                13=\"Charged Up\"",
+            "env_variable": "XRC_GAME",
+            "default_value": "13",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|integer|between:0,13"
+        },
+        {
+            "name": "Frame Rate",
+            "description": "Sets the game tick rate for the server: 1 to 120",
+            "env_variable": "FRAME_RATE",
+            "default_value": "60",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|integer|between:1,120"
+        },
+        {
+            "name": "Spectators",
+            "description": "Maximum number of spectators to allow. Spectators use up bandwidth so limiting ensured smoother gameplay.",
+            "env_variable": "SPECTATORS",
+            "default_value": "2",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|integer|between:0,20"
+        },
+        {
+            "name": "Update Time",
+            "description": "Sets the client update time in ms. The server's network update frame-rate is the inverse of this (e.g. 1\/UPDATETIME). 33 = 30 Frames\/s, 25 = 40 Frames\/s. Lower is better\/smoother, but if set too low it will flood the network causing buffer over-runs resulting in choppy\/jittery performance. The more data sent, the higher this needs to be to avoid issues. Highest data sent is when the most objects are moving - usually near end-game. I would avoid setting it below 25 unless you know what you're doing.",
+            "env_variable": "UPDATE_TIME",
+            "default_value": "30",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|integer|between:1,1000"
+        },
+        {
+            "name": "Max Data",
+            "description": "Sets the maximum bytes to send in any instance before cooling off. This helps spread data out and minimized packet-loss. When set too low, will cause cool-off period to slow down frame-rate. When set too high, can result in packet-loss and jittery performance. Recommend 3000 to be safe, 6000 on good network connections, even higher.",
+            "env_variable": "MAX_DATA",
+            "default_value": "6000",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|integer|between:500,10000"
+        },
+        {
+            "name": "Admin Username",
+            "description": "Sets the admin user name. Admin user name is never displayed when sending chats, allowing this field to be in-itself a password (as long as you only log in as a spectator).",
+            "env_variable": "ADMIN_USER",
+            "default_value": "IAmAdmin",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|string|max:12"
+        },
+        {
+            "name": "Server Comment",
+            "description": "Sets the server comment\/description displayed on the server list.",
+            "env_variable": "COMMENT",
+            "default_value": "My xRC Server",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|string|max:20"
+        },
+        {
+            "name": "Tournament Mode",
+            "description": "Sets whether tournament mode is on or not.",
+            "env_variable": "TMODE",
+            "default_value": "On",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|string|between:2,3"
+        },
+        {
+            "name": "Register on Server List",
+            "description": "If set to On, this server will be publicly listed on the server directory.",
+            "env_variable": "REGISTER",
+            "default_value": "On",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|string|between:2,3"
+        },
+        {
+            "name": "Start When Ready",
+            "description": "Enables\/Disables option to start tournament mode when all users specify they are ready.",
+            "env_variable": "READY_START",
+            "default_value": "On",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|string|between:2,3"
+        },
+        {
+            "name": "Restart Mode",
+            "description": "Sets the game option (\"restart mode\"), from 1 to 5. Not every game uses this options setting.",
+            "env_variable": "GAME_OPTION",
+            "default_value": "1",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|string|between:1,5"
+        },
+        {
+            "name": "Password",
+            "description": "Sets the password that must be entered by players to connect to the server. Cannot contain equals character.",
+            "env_variable": "PASSWORD",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "nullable|string|max:12"
+        },
+        {
+            "name": "Holding Mode",
+            "description": "Enables\/Disables the feature that holds players in place when a match is not running.",
+            "env_variable": "HOLDING_MODE",
+            "default_value": "Off",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|string|between:2,3"
+        },
+        {
+            "name": "Net Stats",
+            "description": "Output outgoing packet statistics every minute. Mainly useful for helping debug high bandwidth utilization.",
+            "env_variable": "NET_STATS",
+            "default_value": "Off",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|string|between:2,3"
+        },
+        {
+            "name": "Game Settings",
+            "description": "Game specific option string. You can infer this string from the \"Clean\" code results in single-player mode (it's the part that looks like \"1:0: ... \")",
+            "env_variable": "GAME_SETTINGS",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "nullable|string|max:60"
+        }
+    ]
+}
